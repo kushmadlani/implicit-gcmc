@@ -18,12 +18,10 @@ class RGCLayer(MessagePassing):
         self.num_item = config.num_nodes - config.num_users
         self.drop_prob = config.drop_prob
         self.weight_init = weight_init
-        self.accum = config.accum
         self.bn = config.rgc_bn # bool
         self.relu = config.rgc_relu # bool
         self.device = config.device
 
-        # self.fc = torch.nn.Linear(self.out_c, self.out_c)
         self.base_weight = nn.Parameter(torch.Tensor(self.in_c, self.out_c))
         self.relu = nn.ReLU()
         if self.bn:
@@ -60,9 +58,6 @@ class RGCLayer(MessagePassing):
         # input vector x_j acts as one hot
         out = weight[x_j].squeeze(dim=1)
 
-        # fully connected layer
-        # out = self.fc(out)
-
         # out is edges x hidden x normalisation
         return out * edge_norm.reshape(-1, 1)
 
@@ -89,43 +84,6 @@ class RGCLayer(MessagePassing):
         weight = weight * drop_mask
 
         return weight
-
-
-    # def propagate(self, edge_index, **kwargs):
-    #     r"""The initial call to start propagating messages.
-    #     Takes in an aggregation scheme (:obj:`"add"`, :obj:`"mean"` or
-    #     :obj:`"max"`), the edge indices, and all additional data which is
-    #     needed to construct messages and to update node embeddings."""
-
-    #     kwargs['edge_index'] = edge_index
-
-    #     size = None
-    #     message_args = []
-    #     for arg in self.__message_args__:
-    #         if arg[-2:] == '_i':
-    #             # tmp is x
-    #             tmp = kwargs[arg[:-2]]
-    #             size = tmp.size(0)
-    #             message_args.append(tmp[edge_index[0]])
-    #         elif arg[-2:] == '_j':
-    #             tmp = kwargs[arg[:-2]]
-    #             size = tmp.size(0)
-    #             message_args.append(tmp[edge_index[1]])
-    #         else:
-    #             message_args.append(kwargs[arg])
-
-    #     update_args = [kwargs[arg] for arg in self.update_args]
-
-    #     # create messages
-    #     out = self.message(*message_args)
-    #     # sum messages from neighbouring nodes
-    #     out = scatter(out, edge_index[0], dim_size=size)
-    #     # update with batch_norm & non-linearity
-    #     out = self.update(out, *update_args)
-    
-    #     return out
-
-
 
 # Second Layer of the Encoder
 class DenseLayer(nn.Module):
@@ -169,17 +127,15 @@ class DenseLayer(nn.Module):
 
         return u_features, i_features
 
-
-
-# Second Layer of the Encoder
+# Second Layer of the Encoder in presence of Side info
 class DenseItemFeatureLayer(nn.Module):
     def __init__(self, config, weight_init, bias=False):
-        super(DenseLayer, self).__init__()
+        super(DenseItemFeatureLayer2, self).__init__()
         in_c = config.hidden_size[0]
         out_c = config.hidden_size[1]
         if config.item_side_info:
             n_side_feat = config.n_side_features 
-            feat_hidden_dim = config.feat_hidden_dim
+            feat_hidden_dim = config.feat_hidden_size
 
         self.device = config.device
         self.weight_init = weight_init
@@ -199,9 +155,9 @@ class DenseItemFeatureLayer(nn.Module):
         if self.relu:
             self.relu = nn.ReLU()
 
-    def forward(self, u_features, i_features, i_side_features, indices):
-
-        # ITEM SIDE FEATURES INDEXED BY X
+    def forward(self, u_features, i_features, side_info):
+        # unpack side_info dict
+        i_side_features = side_info['data']
 
         # user features
         u_features = self.dropout(u_features)
@@ -215,31 +171,18 @@ class DenseItemFeatureLayer(nn.Module):
         # dropout item messages
         i_features = self.dropout(i_features)
 
-        # split items
-        not_indices = torch.tensor([i if i not in indices for i in range(i_features.shape[0])])
-        i_features_with = i_features[indices]
-        i_features_without = i_features[not_indices]
-
-        # items without side info
-        i_features_without = self.fc(i_features_without)
-
         # items with side info
         # pass side info through fc layer
-        i_side_features = self.fc_feat1(i_side_features)
+        i_side_features = self.fc_feat1(i_side_features.float())
+
         # concatenate with messages
-        i_features_with = torch.cat((i_features_with, i_side_features),0)
+        i_features = torch.cat((i_features, i_side_features),1)
+
         # pass through fc layer
-        i_features_with = self.fc_feat2(i_features_with)
-
-        # un-split together
-        perm = torch.cat((indices, not_indices),0)
-        i_features = torch.cat((i_features_with, i_features_without),0)[perm]
-
-        if self.bn:
-            i_features = self.bn_i(
-                    i_features.unsqueeze(0)).squeeze()
+        i_features = self.fc_feat2(i_features)
         if self.relu:
             i_features = self.relu(i_features)
 
         return u_features, i_features
+
 
