@@ -26,3 +26,14 @@ We make the following changes and contributions to adapt the original GC-MC meth
 - Negative interactions. We sample a number of negative unobserved user-item pairs to contribute to the loss function. Learning would not be possible without this step, since the label of all items contributing to the loss would be positive. These unobserved user-item pairs correspond to `empty' edges on the graph.
 
 
+## Train and Test
+```
+cd src
+python train.py -d lastfm -project 'igcmc_lastfm'
+```
+- Configuration:  
+The settings for train and test are configured using `argparse`, details in `src\args.py`
+
+- Dataset:  
+Training dataset is [Last.fm Dataset - 1K users](http://ocelma.net/MusicRecommendationDataset/lastfm-1K.html).
+The dataset is automatically downloaded in `data/` by running `src/train.py`.
