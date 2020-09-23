@@ -5,11 +5,9 @@ import shutil
 import pandas as pd
 import numpy as np
 import random
-
 import torch
 from torch_scatter import scatter_add
-from torch_geometric.data import InMemoryDataset, Data, download_url, extract_zip
-
+from torch_geometric.data import InMemoryDataset, Data
 
 class MCDataset(InMemoryDataset):
     def __init__(self, root, name, num_neg=2, transform=None, pre_transform=None):
@@ -41,7 +39,7 @@ class MCDataset(InMemoryDataset):
     @property
     def raw_file_names(self):
         """File name in root directory for raw data."""
-        return ['train_triplet_df.pkl']
+        return ['train.pkl']
 
     @property
     def processed_file_names(self):
@@ -198,7 +196,7 @@ class MCBatchDataset(InMemoryDataset):
     @property
     def raw_file_names(self):
         """File name in root directory for raw data."""
-        return ['train_triplet_df.pkl']
+        return ['train.pkl']
 
     @property
     def processed_file_names(self):
@@ -208,7 +206,7 @@ class MCBatchDataset(InMemoryDataset):
     def process(self):
         """Process raw data files into PyTorch Geometric `Data' objects"""
         # select dataset
-        if self.name == 'bets':
+        if self.name == 'lastfm':
             path = self.raw_paths[0]
         else:
             raise ValueError()

@@ -6,16 +6,22 @@ import pickle
 import argparse 
 import wandb
 import os
-# os.environ['WANDB_API_KEY'] = # insert weights&biases key to track experiments
+# os.environ['WANDB_API_KEY'] = nsert weights&biases key to track experiments
 
+from preprocessing import download_preprocess 
 from dataset import MCDataset, MCBatchDataset
 from model import GAE
 from model_batch import GAE_Batch
 from trainer import Trainer, TrainerBatch
-from utils import get_args, init_xavier, random_init, evaluate_model
+from utils import init_xavier, random_init, evaluate_model
+from args import get_args
 
 def main(cfg):
     wandb.init(project=cfg.project)
+    
+    # check for data if not download + process
+    if not os.path.exists(cfg.path+'raw/train.pkl'):
+        download_preprocess(cfg.url, cfg.file_path, cfg.path, cfg.cols)
 
     # device and dataset setting
     use_gpu = "cuda" if torch.cuda.is_available() else "cpu"
@@ -28,7 +34,7 @@ def main(cfg):
     # load side information
     if cfg.item_side_info:
         side_info = {}
-        side_info['data'] = torch.tensor(np.load(cfg.side_root+'info2.npy'))
+        side_info['data'] = torch.tensor(np.load(cfg.side_root+'info.npy'))
         cfg.n_side_features = side_info['data'].size(1)
     else:
         side_info = None
@@ -37,7 +43,6 @@ def main(cfg):
         dataset = MCBatchDataset(cfg.root, cfg.dataset, cfg.num_items)
     else:
         dataset = MCDataset(cfg.root, cfg.dataset, cfg.num_neg, cfg.num_items)
-
     data = dataset[0]
     print(data)
 
