@@ -20,8 +20,8 @@ def main(cfg):
     wandb.init(project=cfg.project)
     
     # check for data if not download + process
-    if not os.path.exists(cfg.path+'raw/train.pkl'):
-        download_preprocess(cfg.url, cfg.file_path, cfg.path, cfg.cols)
+    if not os.path.exists(cfg.root+'raw/train.pkl'):
+        download_preprocess(cfg.url, cfg.file_path, cfg.root, cfg.cols)
 
     # device and dataset setting
     use_gpu = "cuda" if torch.cuda.is_available() else "cpu"
@@ -68,7 +68,7 @@ def main(cfg):
 
     # load test data
     test_data = {
-        'test': sp.load_npz(cfg.test_root+'unmasked.npz'),
+        # 'test': sp.load_npz(cfg.test_root+'unmasked.npz'),
         'test_masked': sp.load_npz(cfg.test_root+'masked.npz')
     }
 

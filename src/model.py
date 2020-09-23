@@ -76,7 +76,7 @@ class BiDecoder(nn.Module):
         
         # bilinear form 
         out = torch.chain_matmul(u_features, self.q_matrix, i_features.t()).unsqueeze(-1)
-        
+
         # pass through sigmoid
         out = torch.sigmoid(out)
         out = out.reshape(num_users * num_items, -1)

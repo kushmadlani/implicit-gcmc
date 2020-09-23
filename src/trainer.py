@@ -36,8 +36,9 @@ class Trainer:
             self.top_n = top_n
             self.val_mat = val_data['val']
             self.val_masked_mat = val_data['val_masked']
-        
-        self.model_name = 'checkpoint_'+str(cfg.dataset)+'_'+str(cfg.f)+'_'+str(cfg.item_side_info)+'_.pth.tar'
+
+        # set checkpoint name
+        self.model_name = 'checkpoint_'+str(cfg.dataset)+'_'+str(cfg.factors)+'_'+str(cfg.item_side_info)+'_.pth.tar'
 
     def training(self, epochs):
         best_mpr = 1

@@ -3,7 +3,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description='GCMC')
     # dataset
-    parser.add_argument('-d','--dataset', choices=['bets','lastfm'], required=True,
+    parser.add_argument('-d','--dataset', default='lastfm',
                         help='dataset to run experiment on (either lastfm or bets)')
     parser.add_argument('-t', '--transform', choices=['log', 'linear', 'ratings', None], default=None,
                         help='choose data preprocessing')
@@ -17,15 +17,15 @@ def get_args():
     parser.add_argument('-lr', type=float, default=0.01,
                         help='learning rate to apply for user updates')    
     parser.add_argument('--batch-ratio', type=int, default=0,
-                        help='number of batches per epoch')    
+                        help='number of batches per epoch. If 0 no batching is used')    
     parser.add_argument('--num-neg', type=int, default=2,
                         help='number of negative pairs per positive observation')
     parser.add_argument('--weight-decay', type=float, default=0.00,
                         help='l2 regularisation parameter for optimisation')                            
     # model params
-    parser.add_argument('--hidden-dim', type=int, default=500, metavar='H',
+    parser.add_argument('--hidden-dim', type=int, default=500,
                         help='hidden dimension size')                        
-    parser.add_argument('-f','--factors', type=int, default=128, metavar='F',
+    parser.add_argument('-f','--factors', type=int, default=128,
                         help='latent dimension size')    
     parser.add_argument('--drop-prob', type=float, default=0.5,
                         help='node dropout probability')
@@ -76,6 +76,5 @@ def get_args():
         args.t = 'log'
         args.alpha = 40
         args.eps = 10e-04
-        
 
     return args

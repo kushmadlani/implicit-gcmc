@@ -32,7 +32,8 @@ def download_preprocess(url, file_path, save_path, cols, n=3, m=5, test_ratio=0.
         tar = tarfile.open(filename, "r:gz")
         tar.extract(file_path)
         tar.close()
-    
+        print('data downloaded')
+        
     df = pd.read_csv(file_path, sep="\t", names=cols, error_bad_lines=False)
 
     # remove null songs and items
@@ -108,9 +109,10 @@ def download_preprocess(url, file_path, save_path, cols, n=3, m=5, test_ratio=0.
         os.makedirs(save_path+'raw/')
         os.makedirs(save_path+'test/')
     sp.save_npz(save_path+'test/masked.npz', masked_test_mat)
-    sp.save_npz(save_path+'test/unasked.npz', test_mat)
+    sp.save_npz(save_path+'test/unmasked.npz', test_mat)
 
     # get user-item-count triples for iGC-MC
+    train_df = pd.DataFrame.sparse.from_spmatrix(train_mat)
     train_df['userId'] = train_df.index
     train_df = train_df.melt('userId', var_name='itemId', value_name='rating')
     train_df = train_df[train_df.rating != 0]

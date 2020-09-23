@@ -10,7 +10,7 @@ from torch_scatter import scatter_add
 from torch_geometric.data import InMemoryDataset, Data
 
 class MCDataset(InMemoryDataset):
-    def __init__(self, root, name, num_neg=2, transform=None, pre_transform=None):
+    def __init__(self, root, name, num_neg=2, overide_items=None, transform=None, pre_transform=None):
         """
         Matrix Completion dataset.
 
@@ -27,10 +27,11 @@ class MCDataset(InMemoryDataset):
         """
         self.name = name
         self.num_neg = num_neg
+        self.overide_items = overide_items
         super(MCDataset, self).__init__(root, transform, pre_transform)
         # processed_path[0] is the processed data, defined by process method
         self.data, self.slices = torch.load(self.processed_paths[0])
-        
+
     @property
     def num_nodes(self):
         """Number of nodes in graph."""
@@ -49,7 +50,7 @@ class MCDataset(InMemoryDataset):
     def process(self):
         """Process raw data files into PyTorch Geometric `Data' objects"""
         # select dataset
-        if self.name == 'bets':
+        if self.name == 'lastfm':
             path = self.raw_paths[0]
         else:
             raise ValueError()
@@ -156,7 +157,7 @@ class MCDataset(InMemoryDataset):
                 'edge': len(df)}
         
         return df, nums
-    
+
     def create_gt_idx(self, df, nums):
         """Creates unique id per edge. Returns ids and edge values as Tensors."""
         df['idx'] = df['userId'] * nums['item'] + df['itemId']
