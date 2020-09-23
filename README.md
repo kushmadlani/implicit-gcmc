@@ -1,4 +1,4 @@
-# Implicit Graph Convolutional Matrix Completion (Pytorch)
+# Implicit Graph Convolutional Matrix Completion (PyTorch)
 Graph-based recommender system that extends [Graph Convolutional Matrix Completion](https://arxiv.org/abs/1706.02263) to the implicit feedback setting
 
 ## Note
