@@ -15,6 +15,7 @@ Code base for GC-MC based from [this](https://github.com/tanimutomo/gcmc) implem
 Installation of Pytorch Geometric is very troublesome and may destroy your python environment. So, we strongly recommend to use a virtual environment (e.g. pyenv, virtualenv, pipenv, etc.) Please see [Pytorch Geometric official document](https://rusty1s.github.io/pytorch_geometric/build/html/notes/installation.html) for more details.  
 
 ## Background 
+*Blog post detailing theory [here](https://kushmadlani.github.io/igcmc/)*
 Graph Convoluation Matrix Completion (GC-MC) views the problem of *matrix completion* on our observation matrix from the point of view of link prediction on graphs. In *GC-MC*, the interaction data is represented using bipartite user-item graph with labeled edges denoting observed ratings or interactions. Building on recent progress in deep learning on graph-structured data, the method proposes a graph auto-encoder framework based on differentiable message passing on the bipartite interaction graph. 
 
 We make the following changes and contributions to adapt the original GC-MC method to the implicit feedback setting. These are as follows:
