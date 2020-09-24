@@ -4,16 +4,6 @@ Graph-based recommender system that extends [Graph Convolutional Matrix Completi
 ## Note
 Code base for GC-MC based from [this](https://github.com/tanimutomo/gcmc) implementation in Pytorch and Pytorch Geometric. The official implementation of original GC-MC method is [this](https://github.com/riannevdberg/gc-mc) (Tensorflow).  
 
-## Setup
-- Setup a virtual environment with python 3.6 or newer
-- Install requirements (pip)
-  ```
-  pip install -r requirements/1.txt
-  pip install --verbose --no-cache-dir -r requirements/2.txt
-  pip install -r requirements/3.txt
-  ```
-Installation of Pytorch Geometric is very troublesome and may destroy your python environment. So, we strongly recommend to use a virtual environment (e.g. pyenv, virtualenv, pipenv, etc.) Please see [Pytorch Geometric official document](https://rusty1s.github.io/pytorch_geometric/build/html/notes/installation.html) for more details.  
-
 ## Background 
 *Blog post detailing the theory behind iGC-MC [here](https://kushmadlani.github.io/igcmc/)*.
 
@@ -25,6 +15,16 @@ We make the following changes and contributions to adapt the original GC-MC meth
 - Loss function. We change the model output from a score per rating level to a single scalar output, passed through a sigmoid nonlinearity so as to interpret it as the probability of interaction. Accordingly, our loss function became a binary cross-entropy loss vs what was previously a cross-entropy loss, where a softmax had been applied in the original presentation of the method.
 - Negative interactions. We sample a number of negative unobserved user-item pairs to contribute to the loss function. Learning would not be possible without this step, since the label of all items contributing to the loss would be positive. These unobserved user-item pairs correspond to `empty' edges on the graph.
 
+## Setup
+- Setup a virtual environment with python 3.6 or newer
+- Install requirements (pip)
+  ```
+  pip install -r requirements/1.txt
+  pip install --verbose --no-cache-dir -r requirements/2.txt
+  pip install -r requirements/3.txt
+  ```
+
+Please see [Pytorch Geometric official document](https://rusty1s.github.io/pytorch_geometric/build/html/notes/installation.html) for installation details which can be troublesome.
 
 ## Train and Test
 ```
