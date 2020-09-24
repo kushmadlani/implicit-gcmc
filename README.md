@@ -37,3 +37,6 @@ The settings for train and test are configured using `argparse`, details in `src
 - Dataset:  
 Training dataset is [Last.fm Dataset - 1K users](http://ocelma.net/MusicRecommendationDataset/lastfm-1K.html).
 The dataset is automatically downloaded in `data/` by running `src/train.py`.
+
+## Author
+Kush Madlani
